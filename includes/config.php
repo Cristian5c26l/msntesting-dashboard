@@ -1,9 +1,9 @@
 <?php
     //conection settings
     $host = 'localhost';
-    $user = '';
-    $pass = '';
-    $db = '';
+    $user = 'root';
+    $pass = '123456';
+    $db = 'dashboard';
 
     /*$host = 'localhost';
     $user = 'root';
