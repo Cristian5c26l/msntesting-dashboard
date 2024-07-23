@@ -2143,24 +2143,7 @@ class c_sysinv{
                         <div class="card">
                             <div class="card-header">
                                 <h2>
-                                    <?php
-                                        $resins = $this->model->getInsume($this->host,$this->user,$this->pass,$this->db,$idpc);
-                                        $rowins = mysqli_fetch_array($resins);
-                                        $insumeName = $rowins['name'];
-                                        if ( $name == 'N/A' || $name == '' ) {
-                                            
-                                            ?>
-
-                                            Información del usuario con insumo <span id="insume-name"><b><?php echo $insumeName; ?></b></span> asignado
-                                            <?php
-
-                                        } else {
-                                            ?>
-                                            Información del usuario cuyo componente <span id="insume-name"><b><?php echo $name; ?></b></span> es de su insumo <span><b><?php echo $insumeName;?></b></span> asignado
-                                            <?php
-
-                                        }
-                                    ?>
+                                    Datos del usuario con soporte al mismo insumo o componentes de él
                                 </h2>
                             </div>
                             <div class="card-body">
@@ -2261,7 +2244,7 @@ class c_sysinv{
 
                                         </tr> -->
 
-                                        <tr>
+                                        <!-- <tr>
 
                                             <td>Marca y Modelo</td>
 
@@ -2297,7 +2280,7 @@ class c_sysinv{
                                             ?>
                                             </td>
 
-                                        </tr>
+                                        </tr> -->
 
                                     </thead>
 
@@ -2321,18 +2304,84 @@ class c_sysinv{
             ?>
             <div class="card">
                             <div class="card-header">
-                                <h2>Información del usuario con insumo asignado</h2>
+                                <h2>Datos del usuario con posible(s) soporte(s) al mismo insumo o componentes de él</h2>
                             </div>
                             <div class="card-body">
 
                                 <table id="insume-owner-data-table" class="table table-striped table-bordered" style="width:100%">
 
+                                <thead>
+
+                                    <tr>
+
+                                        <td style="width:300px">Nombre del Usuario</td>
+
+                                        <?php
+                                            if ( $user == 'N/A' || $user == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $user; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Departamento</td>
+
+                                        <?php
+                                            if ( $department == 'N/A' || $department == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $department; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Puesto</td>
+
+                                        <?php
+                                            if ( $job == 'N/A' || $job == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $job; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                </thead>
 
                                     <tbody>
 
-                                        <tr id="no-data">
-                                            <td>No existe registro de ningun soporte realizado a un componente del insumo asignado al usuario</td>
-                                        </tr>                                        
+                                        <!-- <tr id="no-data">
+                                            <td>No existe registro de ningun soporte (solicitado por el usuario) realizado al insumo</td>
+                                        </tr>                                         -->
 
                                     </tbody>
 
@@ -2412,7 +2461,7 @@ class c_sysinv{
                         <tbody>
                             
                         <tr id="no-data">
-                            <td>No hay soportes realizados a ningun componente del insumo asignado al usuario</td>
+                            <td>No hay soportes realizados por el usuario al insumo ni a los componentes de él</td>
                         </tr>
 
 
