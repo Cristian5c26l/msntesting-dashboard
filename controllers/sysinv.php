@@ -784,6 +784,8 @@ class c_sysinv{
 
             $user = $row['user'];
 
+            $iduserins = $row['iduser'];
+
             $last = $row['last'];
 
             $username = $user.' '.$last;
@@ -930,7 +932,7 @@ class c_sysinv{
 
                             </button>
 
-                            <button onclick="responsive('<?php echo $iduser; ?>')" type="button" class="btn btn-outline-success btn-sm">
+                            <button onclick="responsive('<?php echo $id; ?>', '<?php echo $iduserins; ?>')" type="button" class="btn btn-outline-success btn-sm">
 
                                 <i class="material-icons md-14 align-middle mb-1 text-success">book</i>
 
@@ -959,6 +961,247 @@ class c_sysinv{
         }    
 
 
+
+    }
+
+
+    public function listAllInsumePerUser($iduser){
+
+        $res = $this->model->listAllInsumePerUser($this->host,$this->user,$this->pass,$this->db,$iduser);
+
+
+
+        while($row = mysqli_fetch_array($res)){
+
+            $id = $row['id'];
+
+            $area = $row['area'];
+
+            $user = $row['user'];
+
+            $last = $row['last'];
+
+            $username = $user.' '.$last;
+
+            $name = $row['name'];
+
+            $motive = $row['motive'];
+
+            $mark = $row['mark'];
+
+            $size = $row['size'];
+
+            $description = $row['description'];
+
+            $st = $row['st'];
+
+            $mac = $row['mac'];
+
+            $code = $row['code'];
+
+            $sku = $row['sku'];
+
+            $ubication = $row['ubication'];
+
+            $myubication = $row['myubication'];
+
+            $type = $row['type'];
+
+            $status = $row['status'];
+
+            $assignation = "Libre";
+
+            $class = "bg-success text-white font-weight-bold";
+
+
+
+            $in = array("1","2","3");
+
+            $out   = array("PC", "Laptop", "Otro");
+
+
+
+            $newtype = str_replace($in, $out, $type);
+
+            
+
+            $assignate = $row['assignate'];
+
+            if(!empty($assignate)){
+
+                $assignation = "Asignado";
+
+                $class = "bg-success text-white font-weight-bold";
+
+            }else{
+
+                $class = "bg-secondary text-white font-weight-bold";
+
+            }
+
+
+
+            if($status==1){
+
+                $disabled = '';
+
+            }else{
+
+                $disabled = 'disabled';
+
+            }
+
+
+
+            if($st=="Baja"){
+
+                $class = 'bg-danger text-white font-weight-bold';
+
+                $assignation = "Baja";
+
+            }
+
+
+
+            ?>
+
+                <tr>
+
+                    <!-- <td><?php echo $id; ?></td>
+
+                    <td><?php echo $area; ?></td>
+
+                    <td><?php echo $username; ?></td> -->
+
+                    <td><?php echo $name; ?></td>
+
+                    <td><?php echo $motive; ?></td>
+
+                    <td><?php echo $mark; ?></td>
+
+                    <!-- <td><?php echo $size; ?></td> -->
+
+                    <td><?php echo $description; ?></td>
+
+                    <td><?php echo $st; ?></td>
+
+                    <!-- <td><?php echo $mac; ?></td> -->
+
+                    <!-- <td><?php echo $code; ?></td> -->
+
+                    <!-- <td><?php echo $sku; ?></td> -->
+
+                    <td><?php echo $myubication; ?></td>
+
+                    <td><?php echo $newtype; ?></td>
+
+                    <td class="<?php echo $class; ?>"><?php echo $assignation; ?></td>
+
+
+                </tr>    
+
+            <?php
+
+        }    
+
+
+
+    }
+
+    public function listMaintenancePerInsume($idpc){
+
+        $res = $this->model->listMaintenance($this->host,$this->user,$this->pass,$this->db,$idpc);
+
+
+
+        while($row = mysqli_fetch_array($res)){
+
+            $id = $row['id'];
+
+            $user = $row['user'];
+
+            $nameC = $row['name'];
+
+            $component = $row['component'];
+
+            $description = $row['description'];
+
+            $type = $row['type'];
+
+            $sku = $row['sku'];
+
+            $wresult = $row['wresult'];
+
+            $result = $row['results'];
+
+            $date = $row['date'];
+
+
+
+            $status = $row['status'];
+
+
+
+            $in = array("1","2");
+
+            $out   = array("Interno", "Externo");
+
+
+
+            $newtype = str_replace($in, $out, $type);
+
+
+
+            if($status==1){
+
+                $disabled = '';
+
+            }else{
+
+                $disabled = 'disabled';
+
+            }
+
+
+
+            ?>
+
+                <tr>
+
+                    <!-- <td><?php echo $id; ?></td>
+
+                    <td><?php echo $user; ?></td> -->
+
+                    <?php 
+                    if ($nameC == '' || $nameC == 'NULL') {
+                        ?>
+                        <td><?php echo "Ninguno, el mismo equipo asignado"; ?></td>
+                        <?php
+                    }else {
+                        ?>
+                        <td><?php echo $nameC; ?></td>
+                        <?php
+                    }
+                    ?>
+
+
+                    <td><?php echo $description; ?></td>
+
+                    <td><?php echo $newtype; ?></td>
+
+                    <td><?php echo $sku; ?></td>
+
+                    <td><?php echo $wresult; ?></td>
+
+                    <td><?php echo $result; ?></td>
+
+                    <td><?php echo $date; ?></td>
+
+                </tr>    
+
+            <?php
+
+        }
 
     }
 
@@ -1870,257 +2113,527 @@ class c_sysinv{
 
     }
 
-    
 
-    public function responsive($id){
 
-        $res = $this->model->responsive($this->host,$this->user,$this->pass,$this->db,$id);
+    public function responsive($id, $iduser){// $id = $idpc (expediente_tecnico_sis.idpc es el id del insumo que se envia a responsive() desde listAllInsume)
 
-        
+        $idpc = $id;
 
-        while($row = mysqli_fetch_array($res)){
+        $res = $this->model->responsive($this->host,$this->user,$this->pass,$this->db,$idpc);
+
+        $row = mysqli_fetch_array($res);
+
+        if ($row){
 
             $id = $row['id'];
 
             $name = $row['name'];
 
             $sku = $row['sku'];
+            
+            $mark = $row['mark'];
 
+            $user = $row['user'];
+
+            $department = $row['departamento'];
+
+            $job = $row['puesto'];
+
+            $ubication = $row['ubication'];
+
+            // if ( $row['iduser'] != 'NULL' || $row['iduser'] != '' || is_null($row['iduser']) ) {
+            //     $iduser = $row['iduser'];
+            // }    
+
+            $name = $name == 'NULL' ? 'N/A' : $name;
+
+            $sku = $sku == 'NULL' ? 'N/A' : $sku;
+
+            $mark = $mark == 'NULL' ? 'N/A' : $mark;
+
+            $user = $user == 'NULL' ? 'N/A' : $user;
+
+            $department = $department == 'NULL' ? 'N/A' : $department;
+
+            $job = $job == 'NULL' ? 'N/A' : $job;
+
+            $ubication = $ubication == 'NULL' ? 'N/A' : $ubication;
 
 
             ?>
 
-                <div>
+                
 
-                    <h1 style="text-align:center">Inventario</h1>
+                    
 
-                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>
+                                    Datos del usuario con soporte al mismo insumo o componentes de él
+                                </h2>
+                            </div>
+                            <div class="card-body">
 
-                        <table>
+                                <table id="insume-owner-data-table" class="table table-bordered">
 
-                            <thead>
+                                    <thead>
 
-                                <tr>
+                                        <tr>
 
-                                    <td style="width:300px">Nombre del Usuario</td>
+                                            <td style="width:300px">Nombre del Usuario</td>
 
-                                    <td style="width:300px">1.1</td>
+                                            <?php
+                                                if ( $user == 'N/A' || $user == '' ) {
+                                                    
+                                                    ?>
+                                                    <td style="width:300px">N/A</td>
+                                                    <?php
 
-                                </tr>
+                                                } else {
+                                                    ?>
+                                                    <td style="width:300px"><?php echo $user; ?></td>
+                                                    <?php
 
-                                <tr>
+                                                }
+                                            ?>
 
-                                    <td>Departamento</td>
+                                        </tr>
 
-                                    <td>2.1</td>
+                                        <tr>
 
-                                </tr>
+                                            <td>Departamento</td>
 
-                                <tr>
+                                            <?php
+                                                if ( $department == 'N/A' || $department == '' ) {
+                                                    
+                                                    ?>
+                                                    <td style="width:300px">N/A</td>
+                                                    <?php
 
-                                    <td>Puesto</td>
+                                                } else {
+                                                    ?>
+                                                    <td style="width:300px"><?php echo $department; ?></td>
+                                                    <?php
 
-                                    <td>1.1</td>
+                                                }
+                                            ?>
 
-                                </tr>
+                                        </tr>
 
-                                <tr>
+                                        <tr>
 
-                                    <td>Ubicación</td>
+                                            <td>Puesto</td>
 
-                                    <td>1.1</td>
+                                            <?php
+                                                if ( $job == 'N/A' || $job == '' ) {
+                                                    
+                                                    ?>
+                                                    <td style="width:300px">N/A</td>
+                                                    <?php
 
-                                </tr>
+                                                } else {
+                                                    ?>
+                                                    <td style="width:300px"><?php echo $job; ?></td>
+                                                    <?php
 
-                                <tr>
+                                                }
+                                            ?>
 
-                                    <td>Centro de Costo</td>
+                                        </tr>
 
-                                    <td>1.1</td>
+                                        <tr>
 
-                                </tr>
+                                            <td>Ubicación</td>
 
-                                <tr>
+                                            <?php
+                                                if ( $ubication == 'N/A' || $ubication == '' ) {
+                                                    
+                                                    ?>
+                                                    <td style="width:300px">N/A</td>
+                                                    <?php
 
-                                    <td>Marca y Modelo</td>
+                                                } else {
+                                                    ?>
+                                                    <td style="width:300px"><?php echo $ubication; ?></td>
+                                                    <?php
 
-                                    <td>1.1</td>
+                                                }
+                                            ?>
 
-                                </tr>
+                                        </tr>
 
-                            </thead>
+                                        <!-- <tr>
 
-                            <tbody>
+                                            <td>Centro de Costo</td>
 
-                                
+                                            <td>1.1</td>
 
-                            </tbody>
+                                        </tr> -->
 
-                        </table>
+                                        <!-- <tr>
 
+                                            <td>Marca y Modelo</td>
 
+                                            <td>
+                                            <?php
+                                                if ( $mark == 'N/A' || $mark == '' ) {
+                                                    
+                                                    ?>
+                                                    N/A
+                                                    <?php
 
-                        <table>
+                                                } else {
+                                                    ?>
+                                                    <?php echo $mark; ?>
+                                                    <?php
 
-                            <tbody>
+                                                }
+                                            ?>
 
-                                <tr style="border:none">
+                                            <?php
+                                                if ( $sku == 'N/A' || $sku == '' ) {
+                                                    
+                                                    ?>
+                                                    - N/A
+                                                    <?php
 
-                                    <td colspan="2" style="width:300px; font-weight: bold;">Detalles de Solicitud</td>
+                                                } else {
+                                                    ?>
+                                                    <?php echo $sku; ?>
+                                                    <?php
 
-                                    <td colspan="2" style="width:300px; font-weight: bold;">Detalles de Compra</td>
+                                                }
+                                            ?>
+                                            </td>
 
-                                </tr>
+                                        </tr> -->
 
-                                <tr>
+                                    </thead>
 
-                                    <td style="width:120px;">Solicita</td>
+                                    <tbody>
 
-                                    <td style="width:180px;">1.1</td>
+                                        
 
-                                    <td style="width:120px;">Fecha de Compra</td>
+                                    </tbody>
 
-                                    <td style="width:180px;">1.1</td>
+                                </table>
+                            </div>
+                        </div>
 
-                                </tr>
+                        
 
-                                <tr>
-
-                                    <td style="width:120px;">Equipo Solicitado</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">Fecha de Entrega</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Motivo</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">Proveedor</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Autoriza</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">Factura</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                </tr>
-
-
-
-                                <tr style="border:none">
-
-                                    <td colspan="4" style="width:300px; font-weight: bold;">Detalles del Equipo Software</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Software</td>
-
-                                    <td style="width:180px;">Nombre</td>
-
-                                    <td style="width:120px;">Versión</td>
-
-                                    <td style="width:180px;">Licencia</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Sistema Operativo</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">1.2</td>
-
-                                    <td style="width:180px;">1.3</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Ofimática</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">1.2</td>
-
-                                    <td style="width:180px;">1.3</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Administración</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">1.2</td>
-
-                                    <td style="width:180px;">1.3</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">PDF</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">1.2</td>
-
-                                    <td style="width:180px;">1.3</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:120px;">Antivirus</td>
-
-                                    <td style="width:180px;">1.1</td>
-
-                                    <td style="width:120px;">1.2</td>
-
-                                    <td style="width:180px;">1.3</td>
-
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-
-
-                    <div>
-
-                        <div style="background: #000;">Hola</div>
-
-                    </div>
-
-                </div>
-
-                <hr>
+                        
 
             <?php
 
+        } else {
+            ?>
+            <div class="card">
+                            <div class="card-header">
+                                <h2>Datos del usuario con posible(s) soporte(s) al mismo insumo o componentes de él</h2>
+                            </div>
+                            <div class="card-body">
+
+                                <table id="insume-owner-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <td style="width:300px">Nombre del Usuario</td>
+
+                                        <?php
+                                            if ( $user == 'N/A' || $user == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $user; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Departamento</td>
+
+                                        <?php
+                                            if ( $department == 'N/A' || $department == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $department; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>Puesto</td>
+
+                                        <?php
+                                            if ( $job == 'N/A' || $job == '' ) {
+                                                
+                                                ?>
+                                                <td style="width:300px">N/A</td>
+                                                <?php
+
+                                            } else {
+                                                ?>
+                                                <td style="width:300px"><?php echo $job; ?></td>
+                                                <?php
+
+                                            }
+                                        ?>
+
+                                    </tr>
+
+                                </thead>
+
+                                    <tbody>
+
+                                        <!-- <tr id="no-data">
+                                            <td>No existe registro de ningun soporte (solicitado por el usuario) realizado al insumo</td>
+                                        </tr>                                         -->
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+            <?php
         }
+
+        ob_start();
+
+        $this->listMaintenancePerInsume($idpc);
+
+        $output = ob_get_clean();
+
+        if(!empty($output)) {
+            ?>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2>Soportes realizados</h2>
+                </div>
+                <div class="table-responsive">
+                    <table id="all-made-maintenance-of-insume-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                    <thead>
+
+                        <tr>
+
+                            <!-- <th>ID</th>
+
+                            <th>Usuario</th> -->
+
+                            <th>Insumo</th>
+
+                            <th>Descripción</th>
+
+                            <th>Tipo</th>
+
+                            <th>SKU/Serie</th>
+
+                            <th>Resultado Esperado</th>
+
+                            <th>Resultado Obtenido</th>
+
+                            <th>Fecha de Servicio</th>
+
+
+                        </tr>
+
+                    </thead>
+
+                        <tbody>
+                            
+
+                            <?php echo $output; ?>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+            
+            <?php
+
+        
+        } else {
+            ?>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2>Soportes realizados</h2>
+                </div>
+                <div class="card-body">
+
+                    <table id="all-made-maintenance-of-insume-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                        <tbody>
+                            
+                        <tr id="no-data">
+                            <td>No hay soportes realizados por el usuario al insumo ni a los componentes de él</td>
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+            <?php
+        }
+
+        if (!empty($iduser)) {
+
+            ob_start();
+
+            $this->listAllInsumePerUser($iduser);
+
+            $output = ob_get_clean();
+
+            if(!empty($output)) {
+                ?>
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h2>Todos los insumos asignados al usuario</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="all-assigned-insumes-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                            <thead>
+
+                                    <tr>
+
+                                        <!-- <th>ID</th>
+
+                                        <th>Área</th>
+
+                                        <th>Usuario</th> -->
+
+                                        <th>Insumo</th>
+
+                                        <th>Motivo</th>
+
+                                        <th>Marca</th>
+
+                                        <!-- <th>Capacidad</th> -->
+
+                                        <th>Descripción</th>
+
+                                        <th>Condición</th>
+
+                                        <!-- <th>MAC</th> -->
+
+                                        <!-- <th>Codigo</th> -->
+
+                                        <!-- <th>SKU</th> -->
+
+                                        <th>Ubicación</th>
+
+                                        <th>Tipo</th>
+
+                                        <th>Status</th>
+
+                                    </tr>
+
+                                </thead>
+
+                            <tbody>
+                                
+
+                                <?php echo $output; ?>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+                <div>
+
+                    <div style="background: #000;"></div>
+
+                </div>
+                
+                <?php
+
+            
+            } else {
+                ?>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h2>Todos los insumos asignados al usuario</h2>
+                    </div>
+                    <div class="card-body">
+
+                        <table id="all-assigned-insumes-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                            <tbody>
+                                
+                            <tr id="no-data">
+                                <td>No hay insumos asignados al usuario</td>
+                            </tr>
+
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+                <?php
+            }
+
+        } else {
+            ?>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2>Todos los insumos asignados al usuario</h2>
+                </div>
+                <div class="card-body">
+
+                    <table id="all-assigned-insumes-data-table" class="table table-striped table-bordered" style="width:100%">
+
+                        <tbody>
+                            
+                        <tr id="no-data">
+                            <td>No hay insumos asignados al usuario</td>
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+            <?php
+        }
+        
+        
+        
 
     }
 

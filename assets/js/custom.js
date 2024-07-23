@@ -4818,6 +4818,305 @@ function fetchMarksByType(typeId) {
 
 
 
+
+function responsive(id, iduserins) {//id = idpc
+
+    // console.log({ iduserins });
+    
+    $.ajax({
+
+        url: 'views/sysinv/responsive.php',
+
+        data: { id:id, iduserins: iduserins },
+
+        method: 'post',
+
+        beforeSend: function(){
+
+            
+
+        },
+
+        success: function(response){
+
+            $('#content').html(response);
+
+        }
+
+    });
+
+}
+
+
+
+function buildPdfTableForInsumeOwner(tableId) {
+    var pdfTable = {
+        table: {
+        body: []
+        },
+        layout: {
+        // Sin bordes
+        hLineWidth: function (i, node) {
+            return 0; // Sin líneas horizontales
+        },
+        vLineWidth: function (i, node) {
+            return 0; // Sin líneas verticales
+        },
+        hLineColor: function (i, node) {
+            return null; // Sin color para las líneas horizontales
+        },
+        vLineColor: function (i, node) {
+            return null; // Sin color para las líneas verticales
+        },
+        paddingLeft: function(i, node) { return 0; }, // Espaciado a la izquierda
+        paddingRight: function(i, node) { return 0; }, // Espaciado a la derecha
+        paddingTop: function(i) { return 0; },
+        paddingBottom: function(i) { return 0; },
+        }
+    };
+
+    var table = document.getElementById(tableId);
+    var rows = table.querySelectorAll("tr");
+
+    if (rows[0].id === 'no-data') {
+        pdfTable.table.widths = ['auto'];
+        var row = [];
+        var cols = rows[0].querySelectorAll("td");
+        cols.forEach(function(col) {
+        row.push({ text: col.innerText, colSpan: 1, alignment: 'center', style: 'noData' });
+        });
+        pdfTable.table.body.push(row);
+        return pdfTable;
+    }
+
+    // Extraer filas
+    for (var i = 0; i < rows.length; i++) {
+        var row = [];
+        var cols = rows[i].querySelectorAll("td");
+        cols.forEach(function(col, index) {
+        var cellText = { text: col.innerText, style: 'tableCell', margin: [10, 5, 10, 5] };
+        if (index === 0) {
+            cellText.style = 'tableCellBold'; // Aplicar estilo en negritas para el primer td
+            cellText.text = cellText.text + ':'
+        }
+        row.push(cellText);
+        });
+        pdfTable.table.body.push(row);
+    }
+
+    return pdfTable;
+}
+  
+function buildPdfTable(tableId) {
+    var pdfTable = {
+        table: {
+        headerRows: 1,
+        widths: [],
+        body: []
+        },
+        layout: {
+        fillColor: function (rowIndex, node, columnIndex) {
+            return (rowIndex % 2 === 0) ? '#f3f3f3' : null;
+        },
+        hLineWidth: function (i, node) {
+            return 0.5;
+        },
+        vLineWidth: function (i, node) {
+            return 0.5;
+        },
+        hLineColor: function (i, node) {
+            return '#ccc';
+        },
+        vLineColor: function (i, node) {
+            return '#ccc';
+        },
+        }
+    };
+
+    var table = document.getElementById(tableId);
+    var rows = table.querySelectorAll("tr");
+
+    if (rows[0].id === 'no-data') {
+        pdfTable = {
+        table: {
+        widths: ['*', '*'], // Adjusts the width of both columns
+        body: []
+        },
+        layout: {
+        // Sin bordes
+        hLineWidth: function (i, node) {
+            return 0; // Sin líneas horizontales
+        },
+        vLineWidth: function (i, node) {
+            return 0; // Sin líneas verticales
+        },
+        hLineColor: function (i, node) {
+            return null; // Sin color para las líneas horizontales
+        },
+        vLineColor: function (i, node) {
+            return null; // Sin color para las líneas verticales
+        },
+        }
+    };
+
+
+        pdfTable.table.widths = ['auto'];
+        // console.log({tableId});
+        var row = [];
+        var cols = rows[0].querySelectorAll("td");
+        cols.forEach(function(col) {
+        row.push({ text: col.innerText,  colSpan: 1, alignment: 'center', style: 'noData'});
+        });
+        pdfTable.table.body.push(row);
+        return pdfTable;
+    }
+
+    // Extract header row
+    var headerRow = [];
+    var headers = rows[0].querySelectorAll("th, td");
+
+    headers.forEach(function(header) {
+        headerRow.push({ text: header.innerText, style: 'tableHeader' });
+        pdfTable.table.widths.push('auto'); // Set column widths to 'auto'
+    });
+    pdfTable.table.body.push(headerRow);
+
+    // Extract body rows
+    for (var i = 1; i < rows.length; i++) {
+        var row = [];
+        var cols = rows[i].querySelectorAll("td");
+        cols.forEach(function(col) {
+        row.push({ text: col.innerText, style: 'tableCell' });
+        });
+        pdfTable.table.body.push(row);
+    }
+
+    return pdfTable;
+}
+  
+async function convertImageToBase64(url) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const reader = new FileReader();
+
+    // reader.onloadend = () => {// onloadend works when readAsDataURL finished
+    //     var base64String = reader.result.split(',')[1];
+    //     // console.log({base64String});
+
+    //     return base64String;
+        
+    // };
+
+    // reader.readAsDataURL(blob);
+
+    return new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+  
+    // Call the function with the path to your image
+    // convertImageToBase64('../../assets/images/logo.png');
+  
+async function generateResponsivePDF() {
+    var logoBase64 = await convertImageToBase64('../../assets/images/logo.png');
+
+    var docDefinition = {
+    content: [
+        {
+        image: 'data:image/png;base64,' + logoBase64,
+        fit: [120, 120],
+        alignment: 'center',
+        margin: [0, 20, 0, 20]
+        },
+        // {
+        //   text: 'RAND',
+        //   style: 'header'
+        // },
+        {
+        text: 'Inventario de Sistemas',
+        style: 'header'
+        },
+        {
+        text: 'Responsiva de soportes a insumo de usuario o componentes de él',
+        style: 'subheader',
+        alignment: 'center',
+        margin: [0, 10, 0, 20]
+        },
+        { text: `Datos del usuario`, style: 'tabletitle', margin: [0, 0, 0, 10] },// ...con soportes solicitados al mismo insumo o componentes de él
+        buildPdfTableForInsumeOwner('insume-owner-data-table'),
+        { text: 'Soportes realizados', style: 'tabletitle', margin: [0, 15, 0, 15] },
+        buildPdfTable('all-made-maintenance-of-insume-data-table'),
+        { text: 'Todos los insumos asignados al usuario', style: 'tabletitle', margin: [0, 15, 0, 15] },
+        buildPdfTable('all-assigned-insumes-data-table'),
+
+
+        // {
+        //   style: 'tableExample',
+        //   table: {
+        //     widths: [100, '*'],
+        //     body: [
+        //       [{ text: 'Nombre:', bold: true }, 'CRISTIAN'],
+        //       [{ text: 'No de Telefono:', bold: true }, '2dgbdfgb'],
+        //       [{ text: 'Direccion:', bold: true }, 'bdgbdg'],
+        //       [{ text: 'Edad:', bold: true }, 'ergbdfgb']
+        //     ]
+        //   },
+        //   layout: 'noBorders',
+        //   margin: [0, 10, 0, 20]
+        // }
+    ],
+    styles: {
+        header: {
+        fontSize: 20,
+        bold: true,
+        alignment: 'center',
+        margin: [0, 10, 0, 5]
+        },
+        subheader: {
+        fontSize: 14,
+        bold: false,
+        alignment: 'center',
+        margin: [0, 5, 0, 20]
+        },
+        // tableExample: {
+        //   margin: [0, 10, 0, 10]
+        // }
+        tableCell: {
+        // Estilo predeterminado para las celdas
+        fontSize: 10,
+        alignment: 'left',
+        },
+        tableCellBold: {
+        // Estilo para el primer td en negritas
+        fontSize: 10,
+        bold: true,
+        },
+        tabletitle: {
+        fontsize: 12,
+        bold: true,
+        aligment: 'left',
+        },
+        tableHeader: {
+        bold: true,
+        fontSize: 12,
+        // color: '#fff',
+        // fillColor: '#007bff',
+        alignment: 'center',
+        },
+    }
+    };
+
+    // Para generar el PDF
+    pdfMake.createPdf(docDefinition).open();
+}
+
+
+
 function addMaintenance(){
 
     var option = 10;

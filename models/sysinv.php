@@ -332,6 +332,37 @@ class m_sysinv{
     }
 
 
+    public function listAllInsumePerUser($host,$user,$pass,$db,$iduser){
+        $con = $this->connect($host,$user,$pass,$db);
+
+
+
+        $sql = "SELECT I.*, A.area as area, E.name as user, E.last as last, M.mark as mark, Mo.reason as motive, C.storage as size, U.ubication as myubication, S.name as nstatus FROM adm_insumos_sis as I 
+
+        LEFT JOIN areas as A ON A.id = I.idarea
+
+        LEFT JOIN empleados as E ON E.id = I.iduser
+
+        LEFT JOIN adm_marcas_sis as M ON M.id = I.idmark
+
+        LEFT JOIN adm_motivo_sis as Mo ON Mo.id = I.idmotive
+
+        LEFT JOIN adm_capacidad_sis as C ON C.id = I.idsize
+
+        LEFT JOIN adm_ubicacion as U ON U.id = I.ubication
+
+        LEFT JOIN estatus as S ON S.id = I.status
+
+        WHERE I.iduser = '$iduser' AND I.assignate IS NOT NULL AND I.status<4 ";
+
+
+
+        $query = mysqli_query($con,$sql);
+
+        return $query;
+    }
+
+
 
     public function getUser($host,$user,$pass,$db,$id){
 
@@ -681,13 +712,19 @@ class m_sysinv{
 
         $con = $this->connect($host,$user,$pass,$db);
 
-
-
-        $sql = "SELECT E.*, I.name FROM expediente_tecnico_sis as E 
+        $sql = "SELECT E.*, E.sku as Modelo,I.name, A.area AS departamento, M.job AS puesto, U.ubication, K.mark, I.iduser  FROM expediente_tecnico_sis as E 
 
         LEFT JOIN adm_insumos_sis as I ON I.id = E.component
+        
+        LEFT JOIN areas as A ON A.id = I.idarea
+        
+        LEFT JOIN empleados as M ON M.id = I.iduser
+        
+        LEFT JOIN adm_ubicacion as U ON U.id = I.ubication
+        
+        LEFT JOIN adm_marcas_sis as K ON K.id = I.idmark
 
-        WHERE idpc=$id AND E.status!=4 ";
+        WHERE idpc='$id' AND E.status!=4";
 
 
 
